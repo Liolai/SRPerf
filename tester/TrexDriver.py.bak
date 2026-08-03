@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
 import sys
 import argparse
 import json
@@ -9,20 +8,20 @@ from warnings import catch_warnings
 from time import sleep
 
 # get TRex APIs.
-sys.path.insert(0, "/opt/trex-core-3.08/trex_client/interactive/")
+sys.path.insert(0, "/opt/trex-core-2.41/scripts/automation/trex_control_plane/stl/")
 
 from trex_stl_lib.api import *
 
 class TrexOutput():
 
     def __init__(self):
-        # We use a dictionary to represent (internally) the TrexOutput 'class'.
+        # We use a dictionary to represent (internally) the TrexOutput 'class'. 
         self.output = {}
 
         # We create and return a dictionary used to store results of the run.
         # The dictionary is composed by:
-        #
-        # dictionary
+        # 
+        # dictionary 
         #     |
         #     +--tx
         #     |   +--port
@@ -60,7 +59,7 @@ class TrexOutput():
     def setTxDuration(self, duration):
         self.output['tx']['duration'] = duration
 
-    def setRequestedTxRate(self, rate):
+    def setRequestedTxRate(self, rate):   
         self.output['tx']['requested_tx_rate'] = rate
 
     def setWarnings(self, warn):
@@ -82,7 +81,7 @@ class TrexOutput():
         return self.output['tx']['duration']
 
     def getRequestedTxRate(self):
-        return self.output['tx']['requested_tx_rate']
+        return self.output['tx']['requested_tx_rate'] 
 
     def getWarnings(self):
         return self.output['warnings']
@@ -104,7 +103,7 @@ class TrexDriver():
         self.rate = rate;
         self.duration = duration
 
-    # It creates a stream by leveraging the 'pcap' file which has been set
+    # It creates a stream by leveraging the 'pcap' file which has been set 
     # during the driver creation.
     def __buildStreamsFromPcap(self):
             return [STLStream(packet=STLPktBuilder(pkt=self.pcap),
@@ -133,7 +132,7 @@ class TrexDriver():
             client.reset(ports=allPorts)
 
             # We retrieve the streams
-            # NOTE: we have as many streams as captured packets within
+            # NOTE: we have as many streams as captured packets within 
             # the .pcap file.
             streams = self.__buildStreamsFromPcap()
 

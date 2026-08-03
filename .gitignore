@@ -4,3 +4,4 @@
 *.txt
 *.pdf
 *.yaml
+!requirements.txt

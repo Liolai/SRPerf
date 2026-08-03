@@ -1,12 +1,16 @@
 #!/bin/sh
 
-TREX_VERSION=$1
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <T-REX version (e.g. 3.08) >"
+    exit 1
+fi
 
-TREX_DOWNLOAD_REPO="https://github.com/cisco-system-traffic-generator/trex-core/archive/"
-TREX_DOWNLOAD_PACKAGE="v${TREX_VERSION}.zip"
+TREX_VERSION=$1
+TREX_DOWNLOAD_REPO="https://trex-tgn.cisco.com/trex/release/"
+TREX_DOWNLOAD_PACKAGE="v${TREX_VERSION}.tar.gz"
 TREX_PACKAGE_URL="${TREX_DOWNLOAD_REPO}${TREX_DOWNLOAD_PACKAGE}"
 TARGET_DIR="/opt/"
-TREX_DIR="trex-core-${TREX_VERSION}/"
+TREX_DIR="trex-core-${TREX_VERSION}"
 TREX_INSTALL_DIR="${TARGET_DIR}${TREX_DIR}"
 
 if test "$(id -u)" -ne 0
@@ -26,11 +30,16 @@ trap cleanup EXIT
 
 test -d ${TREX_INSTALL_DIR} && echo "T-REX aleready installed: ${TREX_INSTALL_DIR}" && exit 0
 
-wget -P ${WORKING_DIR} ${TREX_PACKAGE_URL}
+echo "Downloading T-REX from: ${TREX_PACKAGE_URL}"
+echo "Bypassing certificate check because of missing intermediate certificates on trex-tgn.cisco.com."
+wget --no-check-certificate --no-verbose --no-cache -P ${WORKING_DIR} ${TREX_PACKAGE_URL}
 test $? -eq 0 || exit 1
 
-unzip ${WORKING_DIR}/${TREX_DOWNLOAD_PACKAGE} -d ${TARGET_DIR}
+mkdir -p ${TREX_INSTALL_DIR}
+tar -xzf ${WORKING_DIR}/${TREX_DOWNLOAD_PACKAGE} -C ${TREX_INSTALL_DIR} --strip-components=1
 test $? -eq 0 || exit 1
 
-cd ${TREX_INSTALL_DIR}/linux_dpdk/ && ./b configure && ./b build || exit 1
-cd ${TREX_INSTALL_DIR}/scripts/ko/src && make && make install || exit 1
+tar -xzf ${TREX_INSTALL_DIR}/trex_client_${TREX_DOWNLOAD_PACKAGE} -C ${TREX_INSTALL_DIR}
+
+# cd ${TREX_INSTALL_DIR}/linux_dpdk/ && ./b configure && ./b build || exit 1
+# cd ${TREX_INSTALL_DIR}/scripts/ko/src && make && make install || exit 1

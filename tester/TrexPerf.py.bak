@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
 import numpy as np
 
 from TrexDriver import *
@@ -62,7 +61,7 @@ class TrexPerfDriver():
     def doPerformanceTest(self):
         results = []
 
-        # We initialize the TrexDriver used to drive multiple tests with the
+        # We initialize the TrexDriver used to drive multiple tests with the 
         # same traffic rate.
         driver = TrexDriver(self.server, self.txPort, self.rxPort, self.pcap,
                             self.rate, self.duration)
@@ -87,9 +86,9 @@ class TrexPerfDriver():
         return results
 
     def doPostProcessing(self, results):
-        # We create 'TrexPerfOutput' object which contains a reference to
+        # We create 'TrexPerfOutput' object which contains a reference to 
         # performed runs and aggregate measurements such as mean of DR and also
-        # the std.
+        # the std. 
         output = None
 
         #Requested tx rate is always the same for every run in the experiment.
@@ -104,18 +103,18 @@ class TrexPerfDriver():
             warn = run.getWarnings()
 
             if warn is not None:
-                # There is a warning, so it is better to print out on screen
+                # There is a warning, so it is better to print out on screen 
                 # instead of suppress it.
                 print('Run ({0}) - Warning {1}'.format(i, warn))
             else:
                 txTotalPackets = run.getTxTotalPackets()
                 rxTotalPackets = run.getRxTotalPackets()
 
-                # Let's check if rxTotalPacket is greater than txTotalPacket.
+                # Let's check if rxTotalPacket is greater than txTotalPacket. 
                 # If this is the case (due to lldp packets) we normalize the
                 # number of received packets with the 'txTotalPackets' counter.
                 # Anyway, if the rxTotalPackets is > rxTotalPacketsTolerance then
-                # some issues occurred... and we need to skip the run in order
+                # some issues occurred... and we need to skip the run in order 
                 # to let the results valid.
                 rxTotalPacketsTolerance = txTotalPackets + (1.0 / 1000.0) * txTotalPackets
                 if rxTotalPackets > rxTotalPacketsTolerance:
@@ -134,13 +133,13 @@ class TrexPerfDriver():
                 dlRuns = np.append(dlRuns, dl)
 
                 # We set the requested tx rate only the first time (using the first
-                # run in the experiment; following runs will have the same
+                # run in the experiment; following runs will have the same 
                 # requested tx rate.
                 if txRate is None:
                     txRate = run.getRequestedTxRate()
         # End of for
 
-        # We check if the array which contains the results is empty or not.
+        # We check if the array which contains the results is empty or not. 
         # In case of empty array something is went wrong and we must terminate
         # the measurements.
         if 0 == dlRuns.size:
@@ -150,7 +149,7 @@ class TrexPerfDriver():
         # We evaluate mean and std of delivery ratios
         dlMean = np.mean(dlRuns)
 
-        if 1 < dlRuns.size:
+        if 1 < dlRuns.size: 
             dlStd = np.std(dlRuns, ddof=1)
         else:
             dlStd = 0
@@ -177,9 +176,9 @@ class TrexPerfDriver():
 class TrexExperiment(Experiment):
 
     def __init__(self, server, txPort, rxPort, pcap, rate, repetitions, duration):
-        super().__init__()
+        super(Experiment, self).__init__()
 
-        self.perfDriver = TrexPerfDriver(server, txPort, rxPort, pcap, rate,
+        self.perfDriver = TrexPerfDriver(server, txPort, rxPort, pcap, rate, 
                                          repetitions, duration)
         self.invoked = False
 
@@ -197,7 +196,7 @@ class TrexExperiment(Experiment):
 class TrexExperimentFactory(ExperimentFactory):
 
     def __init__(self, server, txPort, rxPort, pcap, repetitions, duration):
-        super().__init__()
+        super(ExperimentFactory, self).__init__()
 
         self.server = server
         self.txPort = txPort
@@ -213,8 +212,8 @@ class TrexExperimentFactory(ExperimentFactory):
 
 # Entry point used for testing
 if __name__ == '__main__':
-    factory = TrexExperimentFactory('127.0.0.1', 0, 1,
-                                    'pcap/raw-pcap-files/plain-ipv6-64.pcap',
+    factory = TrexExperimentFactory('127.0.0.1', 0, 1, 
+                                    'pcap/raw-pcap-files/plain-ipv6-64.pcap', 
                                     1, 5)
     print ('Running ...')
 
@@ -225,8 +224,9 @@ if __name__ == '__main__':
         sys.exit(1)
 
     print('Requested Tx Rate {0}, Mean {1}, Std. {2}'.format(
-                                                 output.getRequestedTxRate(),
-                                                 output.getAverageDR(),
+                                                 output.getRequestedTxRate(), 
+                                                 output.getAverageDR(), 
                                                  output.getStdDR()))
-
+    
     print ('Completed ...')
+
