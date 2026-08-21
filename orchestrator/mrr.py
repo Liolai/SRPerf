@@ -37,7 +37,7 @@ class MRR(object):
     for iteration in range(0, config.run):
       print("MRR %s-%s Run %s" %(config.type, config.experiment, iteration))
       # At first we create the experiment factory with the right parameters
-      factory = TrexExperimentFactory(TREX_SERVER, TX_PORT, RX_PORT, "%s/%s.pcap" %(PCAP_HOME, ConfigParser.get_packet(config)),
+      factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" %(PCAP_HOME, ConfigParser.get_packet(config)),
                                       SAMPLES, DURATION)
       # Build the experiment passing a given rate
       experiment = factory.build(RATE)
