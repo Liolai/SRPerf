@@ -35,6 +35,7 @@ class SshNode(object):
     # Auto add policy
     self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     # Connect to the host
+    print("Connecting to %s" % self.host)
     self.client.connect(self.host, username=self.username, key_filename=PRIVATE_KEY_FILE)
     # Spawn a channel to send commands
     self.chan = self.client.invoke_shell()
@@ -50,9 +51,9 @@ class SshNode(object):
     # Iterate until the stdout ends or the stop condition has been triggered
     while not u.search(buff) and self.stop == False:
       # Rcv from the channel the stdout
-      resp = self.chan.recv(1024)
+      resp = self.chan.recv(1024).decode('utf-8')
       # if it is a sudo command, send the password
-      if re.search(".*\[sudo\].*", resp):
+      if re.search(r".*\[sudo\].*", resp):
         self.chan.send("%s\r" % (self.passwd))
       # Add response on buffer
       buff += resp
