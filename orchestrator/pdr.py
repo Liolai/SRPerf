@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../
 
 from NoDropRateSolver import *
 from TrexPerf import TrexExperimentFactory
+from QuicPerf import QuicExperimentFactory
 from config_parser import ConfigParser
 
 # Trex server
@@ -24,7 +25,7 @@ PCAP_HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../pcap/tr
 # Define the namber of samples for a given PDR
 SAMPLES = 1
 # Starting tx rate
-STARTING_TX_RATE = 100000.0
+STARTING_TX_RATE = 100.0
 # NDR window
 NDR_WINDOW = 500.0
 # Lower bound for delivery ratio
@@ -41,7 +42,10 @@ class PDR(object):
         for iteration in range(0, config.run):
             print("PDR %s-%s Run %s" % (config.type, config.experiment, iteration))
             # At first we create the experiment factory with the right parameters
-            factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+            if config.type == "quic":
+                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+            else:
+                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
             # Then we instantiate the NDR solver with the above defined parameters
             ndr = NoDropRateSolver(STARTING_TX_RATE, config.line_rate, NDR_WINDOW, config.lb_dlr, RateType.PPS, factory)
             ndr.solve()

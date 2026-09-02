@@ -7,6 +7,7 @@ import numpy as np
 # We need to add tester modules
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../tester"))
 
+from QuicPerf import QuicExperimentFactory
 from TrexPerf import TrexExperimentFactory
 from config_parser import ConfigParser
 
@@ -37,7 +38,10 @@ class MRR(object):
         for iteration in range(0, config.run):
             print("MRR %s-%s Run %s" % (config.type, config.experiment, iteration))
             # At first we create the experiment factory with the right parameters
-            factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+            if config.type == "quic":
+                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+            else:
+                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
             # Build the experiment passing a given rate
             experiment = factory.build(config.mrr_rate)
             # Run and collect the output of the experiment

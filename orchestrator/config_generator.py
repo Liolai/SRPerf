@@ -142,11 +142,11 @@ def generate_proxy(write=True, size="all", tx_port=0, rx_port=1, lb_dlr=0.995, m
     write_config(configs)
 
 
-def generate_custom(write=True, size="all", tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%"):
+def generate_quic(write=True, size="all", tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%"):
     # Define the experiments
     experiments = [
-        {"type": "custom", "experiment": "custom", "rate": "pdr", "run": RUN, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr},
-        {"type": "custom", "experiment": "custom", "rate": "mrr", "run": RUN, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
+        {"type": "quic", "experiment": "quic", "rate": "pdr", "run": RUN, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr},
+        {"type": "quic", "experiment": "quic", "rate": "mrr", "run": RUN, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
     ]
     # Generate configs
     configs = generate_configs(experiments, size)
@@ -180,8 +180,8 @@ def generate():
         generate_proxy(True, options.size, options.tx_port, options.rx_port, options.lb_dlr, options.rate)
     elif options.type == "all":
         generate_all(options.size, options.tx_port, options.rx_port, options.lb_dlr, options.rate)
-    elif options.type == "custom":
-        generate_custom(True, options.size, options.tx_port, options.rx_port, options.lb_dlr, options.rate)
+    elif options.type == "quic":
+        generate_quic(True, options.size, options.tx_port, options.rx_port, options.lb_dlr, options.rate)
     else:
         print("Type %s Not Supported Yet" % options.type)
 
