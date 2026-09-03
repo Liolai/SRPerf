@@ -30,7 +30,8 @@ FWD_ENGINE_KEY = "fwd"
 # Results files
 RESULTS_FILES = {
     'linux' :   'Linux.txt',
-    'vpp'   :   'VPP.txt'
+    'vpp'   :   'VPP.txt',
+    'msquic':   'MsQuic.txt'
 }
 
 # Global variables

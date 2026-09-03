@@ -83,7 +83,7 @@ class NoDropRateSolver:
         solutionInterval = 0.0
         curRate = 0.0
         curDelRatio = 0.0
-        
+
         # We have removed the Exponential Search, so we need to be sure that
         # lower bound delivery ratio is above the threshold. Indeed, if the
         # lower bound DR does not respect the threshold, it is completely useless
@@ -112,6 +112,8 @@ class NoDropRateSolver:
                 else:
                     self.rateLowerBound = curRate
                     self.delRatioLowerBound = curDelRatio
+                    # make eps a percentage of the lower bound (0.5%)
+                    self.eps = self.rateLowerBound * 0.005
 
                 # We create a tuple that collects relevant data for this iteration
                 tuple = (self.rateLowerBound, self.delRatioLowerBound,
@@ -149,4 +151,3 @@ class NoDropRateSolver:
             # element is the smallest searching window evaluated during the
             # log search.
             return self.results[-1]
-
