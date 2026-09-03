@@ -116,11 +116,11 @@ class QuicDriver:
         dport = referencePkt[UDP].dport
         pkt: scapy.packet.Packet = QuicPktBuilder.buildInitialForceVersionNegotiation(sip, dip, sport, dport)
         vm: STLVM = STLVM()
-        vm.var(name="sip", min_value="192.168.10.2", max_value="192.168.10.254", size=4, op="inc")
+        # vm.var(name="sip", min_value="192.168.10.2", max_value="192.168.10.254", size=4, op="inc")
         vm.var(name="sport", min_value=0x1000, max_value=0xFFFF, size=2, op="inc")
         vm.var(name="dcid", min_value=0x1000000000000000, max_value=0xFFFFFFFFFFFFFFFF, size=8, op="inc")
         vm.var(name="scid", min_value=0x2000000000000000, max_value=0xFFFFFFFFFFFFFFFF, size=8, op="inc")
-        vm.write(fv_name="sip", pkt_offset="IP.src")
+        # vm.write(fv_name="sip", pkt_offset="IP.src")
         vm.write(fv_name="sport", pkt_offset="UDP.sport")
         vm.write(fv_name="dcid", pkt_offset=0x30)
         vm.write(fv_name="scid", pkt_offset=0x39)
