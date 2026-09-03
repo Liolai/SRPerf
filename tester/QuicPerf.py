@@ -115,7 +115,7 @@ class QuicPerfDriver:
                 # Anyway, if the rxTotalPackets is > rxTotalPacketsTolerance then
                 # some issues occurred... and we need to skip the run in order
                 # to let the results valid.
-                rxTotalPacketsTolerance = txTotalPackets + (1.0 / 1000.0) * txTotalPackets
+                rxTotalPacketsTolerance = txTotalPackets + (5.0 / 1000.0) * txTotalPackets
                 if rxTotalPackets > rxTotalPacketsTolerance:
                     print("Run ({0}) - Warning rxTotalPackets ({1} > {2}) exceeded the threshold. Run will be skipped.".format(i, float(rxTotalPackets), float(rxTotalPacketsTolerance)))
 

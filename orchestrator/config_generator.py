@@ -162,11 +162,12 @@ def generate():
     parser = OptionParser()
     parser.add_option("-t", "--type", dest="type", type="string", default="plain", help="Test type {plain|transit|end|proxy|all}")
     parser.add_option("-s", "--size", dest="size", type="string", default="all", help="Size type {max|min|all}")
+    parser.add_option("--runs", dest="runs", type="int", default=RUN, help="Number of runs")
     parser.add_option("--tx_port", dest="tx_port", type="int", default=0, help="Tx port")
     parser.add_option("--rx_port", dest="rx_port", type="int", default=1, help="Rx port")
     parser.add_option("--lb_dlr", dest="lb_dlr", type="float", default=0.995, help="PDR Lower bound for delivery ratio")
     parser.add_option("--rate", dest="rate", type="string", default="100%", help="MRR rate as string (100%)")
-    parser.add_option("--runs", dest="runs", type="int", default=RUN, help="Number of runs")
+    parser.add_option("--dup_rate", dest="dup_rate", type="float", default=0.0, help="Duplication rate (0.0-1.0)")
 
     # Parse input parameters
     (options, args) = parser.parse_args()
