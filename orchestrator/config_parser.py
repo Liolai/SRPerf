@@ -46,6 +46,7 @@ class ConfigParser(object):
                     rx_port=config["rx_port"],
                     lb_dlr=config["lb_dlr"] if "lb_dlr" in config else 0.995,
                     mrr_rate=config["mrr_rate"] if "mrr_rate" in config else "100%",
+                    ndr_window=config["ndr_window"] if "ndr_window" in config else 100
                 )
             )
 

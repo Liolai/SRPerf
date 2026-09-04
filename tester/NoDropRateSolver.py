@@ -112,8 +112,6 @@ class NoDropRateSolver:
                 else:
                     self.rateLowerBound = curRate
                     self.delRatioLowerBound = curDelRatio
-                    # make eps a percentage of the lower bound (1%) or 10 pps
-                    self.eps = max(self.rateLowerBound * 0.01, 10)
 
                 # We create a tuple that collects relevant data for this iteration
                 tuple = (self.rateLowerBound, self.delRatioLowerBound,
