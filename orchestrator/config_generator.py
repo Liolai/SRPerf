@@ -174,17 +174,17 @@ def generate():
     (options, args) = parser.parse_args()
     # Run proper generator according to the type
     if options.type == "plain":
-        generate_plain(True, options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_plain(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     elif options.type == "transit":
-        generate_transit(True, options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_transit(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     elif options.type == "end":
-        generate_end(True, options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_end(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     elif options.type == "proxy":
-        generate_proxy(True, options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_proxy(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     elif options.type == "all":
-        generate_all(options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_all(options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     elif options.type == "quic":
-        generate_quic(True, options.size, options.tx_port, options.rx_port, options.runs, options.lb_dlr, options.rate, options.ndr_window)
+        generate_quic(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window)
     else:
         print("Type %s Not Supported Yet" % options.type)
 
