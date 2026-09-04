@@ -168,7 +168,7 @@ def generate():
     parser.add_option("--lb_dlr", dest="lb_dlr", type="float", default=0.995, help="PDR Lower bound for delivery ratio")
     parser.add_option("--rate", dest="rate", type="string", default="100%", help="MRR rate as string (100%)")
     parser.add_option("--dup_rate", dest="dup_rate", type="float", default=0.0, help="Duplication rate (0.0-1.0)")
-    parser.add_option("--ndr_window", dest="ndr_window", type="int", default=100, help="Window for NDR(epsilon) in pps")
+    parser.add_option("--ndr_window", dest="ndr_window", type="float", default=100, help="Window for NDR(epsilon) in pps")
 
     # Parse input parameters
     (options, args) = parser.parse_args()
