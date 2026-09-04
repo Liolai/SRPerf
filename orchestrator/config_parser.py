@@ -8,7 +8,7 @@ import yaml
 from collections import namedtuple
 
 # Line rate mapping - WARNING Some values are random
-LINE_RATES = {"ipv6": 12253000, "ipv4": 12253000, "t_encaps_v6": 12253000, "t_encaps_v4": 12253000, "t_encaps_l2": 12253000, "t_insert_v6": 12253000, "end": 6868000, "end_x": 6868000, "end_t": 6868000, "end_b6": 6868000, "end_b6_encaps": 6868000, "end_dx6": 6868000, "end_dx4": 6868000, "end_dx2": 6377000, "end_dt6": 6377000, "end_ad6": 6377000, "end_ad4": 6377000, "end_am": 6377000, "quic": 12253000}
+LINE_RATES = {"ipv6": 12253000, "ipv4": 12253000, "t_encaps_v6": 12253000, "t_encaps_v4": 12253000, "t_encaps_l2": 12253000, "t_insert_v6": 12253000, "end": 6868000, "end_x": 6868000, "end_t": 6868000, "end_b6": 6868000, "end_b6_encaps": 6868000, "end_dx6": 6868000, "end_dx4": 6868000, "end_dx2": 6377000, "end_dt6": 6377000, "end_ad6": 6377000, "end_ad4": 6377000, "end_am": 6377000, "quic": 0xFFFF}
 
 # Config utilities
 Config = namedtuple("Config", ["type", "experiment", "size", "rate", "run", "line_rate", "tx_port", "rx_port", "lb_dlr", "mrr_rate", "ndr_window"])
