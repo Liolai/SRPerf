@@ -1,7 +1,8 @@
 import scapy
 import scapy.layers
 from scapy.layers.inet import IP, UDP, Ether
-from scapy.all import Raw, hexdump
+from scapy.all import Raw, hexdump, PcapWriter
+import sys
 
 
 TYPE_INITIAL = 0b00
@@ -42,5 +43,17 @@ def varInt(x: int):
 
 
 if __name__ == "__main__":
-    pkt = buildInitialForceVersionNegotiation("127.0.0.1", "127.0.0.2", 1234, 1234)
+    args = sys.argv[1:]
+    if args[0].lower() in ["-h", "--help", "help", "h"]:
+        print("Usage: python3 QuicPktBuilder.py sip dip sport dport pcap_file")
+        print("Example: python3 QuicPktBuilder.py 127.0.0.1 127.0.0.2 44300 443 quic.pcap")
+        exit(0)
+
+    sip = args[0] or "127.0.0.1"
+    dip = args[1] or "127.0.0.2"
+    sport = int(args[2]) or 44300
+    dport = int(args[3]) or 443
+    pcap_file = args[4] or "quic.pcap"
+    pkt = buildInitialForceVersionNegotiation(sip, dip, sport, dport)
     hexdump(pkt)
+    scapy.all.wrpcap(pcap_file, pkt)
