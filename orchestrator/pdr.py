@@ -25,7 +25,7 @@ PCAP_HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../pcap/tr
 # Define the namber of samples for a given PDR
 SAMPLES = 1
 # Starting tx rate
-STARTING_TX_RATE = 100.0
+STARTING_TX_RATE = 1.0
 # NDR window
 NDR_WINDOW = 500.0
 # Lower bound for delivery ratio
