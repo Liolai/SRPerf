@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys
 import numpy as np
+import os
 
 # We need to add tester modules
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../tester"))
@@ -45,7 +46,9 @@ class MRR(object):
             # Build the experiment passing a given rate
             experiment = factory.build(config.mrr_rate)
             # Run and collect the output of the experiment
+            print("Started Run %s" % iteration)
             run = experiment.run().runs[0]
+            print("Finished Run %s" % iteration)
             # Calculate mrr and then store in the array
             mrr = run.getRxTotalPackets() / DURATION
             results.append(mrr)

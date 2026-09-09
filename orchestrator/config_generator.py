@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 # Config file
 CONFIG_FILE = "config.yaml"
-# Number of runs
+# Number of options.runs
 RUN = 10
 
 
@@ -17,12 +17,12 @@ def write_config(configs=[]):
 
 
 # Generate config for all tests
-def generate_all(size, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_all(options):
     configs = []
-    configs.extend(generate_plain(False, size, tx_port, rx_port, lb_dlr, mrr_rate, ndr_window, start_tx_rate, line_rate))
-    configs.extend(generate_transit(False, size, tx_port, rx_port, lb_dlr, mrr_rate, ndr_window, start_tx_rate, line_rate))
-    configs.extend(generate_end(False, size, tx_port, rx_port, lb_dlr, mrr_rate, ndr_window, start_tx_rate, line_rate))
-    configs.extend(generate_proxy(False, size, tx_port, rx_port, lb_dlr, mrr_rate, ndr_window, start_tx_rate, line_rate))
+    configs.extend(generate_plain(options, False))
+    configs.extend(generate_transit(options, False))
+    configs.extend(generate_end(options, False))
+    configs.extend(generate_proxy(options, False))
     # Write the entire configuration
     write_config(configs)
 
@@ -55,22 +55,32 @@ def generate_configs(experiments, size):
 
 
 # Generate config for plain tests
-def generate_plain(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_plain(options, write=True):
     # Define the experiments
-    experiments = [
-        {"type": "plain", "experiment": "ipv6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "plain", "experiment": "ipv6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "plain", "experiment": "ipv4", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "plain", "experiment": "ipv4", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-    ]
+    experiments = []
+    if options.pdr:
+        experiments.extend(
+            [
+                {"type": "plain", "experiment": "ipv6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "plain", "experiment": "ipv4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+            ]
+        )
+    if options.mrr:
+        experiments.extend(
+            [
+                {"type": "plain", "experiment": "ipv6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "plain", "experiment": "ipv4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            ]
+        )
+
     for i, experiment in enumerate(experiments):
         if experiment["rate"] == "pdr":
-            experiments[i]["start_tx_rate"] = start_tx_rate
-            if line_rate is not None:
-                experiments[i]["line_rate"] = line_rate
+            experiments[i]["start_tx_rate"] = options.start_tx_rate
+            if options.line_rate is not None:
+                experiments[i]["line_rate"] = options.line_rate
 
     # Generate configs
-    configs = generate_configs(experiments, size)
+    configs = generate_configs(experiments, options.size)
     if not write:
         return configs
     # Write the PLAIN configuration
@@ -78,25 +88,34 @@ def generate_plain(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr
 
 
 # Generate config for transit tests
-def generate_transit(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_transit(options, write=True):
     # Define the experiments
-    experiments = [
-        {"type": "srv6", "experiment": "t_encaps_v6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "t_encaps_v6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "t_encaps_v4", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "t_encaps_v4", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "t_encaps_l2", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "t_encaps_l2", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "t_insert_v6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "t_insert_v6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-    ]
+    experiments = []
+    if options.pdr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_insert_v6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+            ]
+        )
+    if options.mrr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_insert_v6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            ]
+        )
     for i, experiment in enumerate(experiments):
         if experiment["rate"] == "pdr":
-            experiments[i]["start_tx_rate"] = start_tx_rate
-            if line_rate is not None:
-                experiments[i]["line_rate"] = line_rate
+            experiments[i]["start_tx_rate"] = options.start_tx_rate
+            if options.line_rate is not None:
+                experiments[i]["line_rate"] = options.line_rate
     # Generate configs
-    configs = generate_configs(experiments, size)
+    configs = generate_configs(experiments, options.size)
     if not write:
         return configs
     # Write the TRANSIT configuration
@@ -104,35 +123,45 @@ def generate_transit(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_d
 
 
 # Generate config for end tests
-def generate_end(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_end(options, write=True):
     # Define the experiments
-    experiments = [
-        {"type": "srv6", "experiment": "end", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_x", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_x", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_t", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_t", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_b6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_b6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_b6_encaps", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_b6_encaps", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_dx6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_dx6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_dx4", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_dx4", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_dx2", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_dx2", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_dt6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_dt6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-    ]
+    experiments = []
+    if options.pdr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "end", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_x", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_t", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_b6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx2", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dt6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+            ]
+        )
+    if options.mrr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "end", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_x", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_t", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_b6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx2", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dt6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            ]
+        )
+
     for i, experiment in enumerate(experiments):
         if experiment["rate"] == "pdr":
-            experiments[i]["start_tx_rate"] = start_tx_rate
-            if line_rate is not None:
-                experiments[i]["line_rate"] = line_rate
+            experiments[i]["start_tx_rate"] = options.start_tx_rate
+            if options.line_rate is not None:
+                experiments[i]["line_rate"] = options.line_rate
     # Generate configs
-    configs = generate_configs(experiments, size)
+    configs = generate_configs(experiments, options.size)
     if not write:
         return configs
     # Write the END configuration
@@ -140,42 +169,59 @@ def generate_end(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0
 
 
 # Generate config for proxy tests
-def generate_proxy(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_proxy(options, write=True):
     # Define the experiments
-    experiments = [
-        {"type": "srv6", "experiment": "end_ad6", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_ad6", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_ad4", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_ad4", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-        {"type": "srv6", "experiment": "end_am", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "srv6", "experiment": "end_am", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-    ]
+    experiments = []
+    if options.pdr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "end_ad6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_ad4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_am", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+            ]
+        )
+    if options.mrr:
+        experiments.extend(
+            [
+                {"type": "srv6", "experiment": "end_ad6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_ad4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_am", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            ]
+        )
     for i, experiment in enumerate(experiments):
         if experiment["rate"] == "pdr":
-            experiments[i]["start_tx_rate"] = start_tx_rate
-            if line_rate is not None:
-                experiments[i]["line_rate"] = line_rate
+            experiments[i]["start_tx_rate"] = options.start_tx_rate
+            if options.line_rate is not None:
+                experiments[i]["line_rate"] = options.line_rate
     # Generate configs
-    configs = generate_configs(experiments, size)
+    configs = generate_configs(experiments, options.size)
     if not write:
         return configs
     # Write the PROXY configuration
     write_config(configs)
 
 
-def generate_quic(write=True, size="all", runs=10, tx_port=0, rx_port=1, lb_dlr=0.995, mrr_rate="100%", ndr_window=100, start_tx_rate=1, line_rate=None):
+def generate_quic(options, write=True):
     # Define the experiments
-    experiments = [
-        {"type": "quic", "experiment": "quic", "rate": "pdr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "lb_dlr": lb_dlr, "ndr_window": ndr_window},
-        {"type": "quic", "experiment": "quic", "rate": "mrr", "run": runs, "tx_port": tx_port, "rx_port": rx_port, "mrr_rate": mrr_rate},
-    ]
+    experiments = []
+    if options.pdr:
+        experiments.extend(
+            [
+                {"type": "quic", "experiment": "quic", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+            ]
+        )
+    if options.mrr:
+        experiments.extend(
+            {"type": "quic", "experiment": "quic", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+        )
+
     for i, experiment in enumerate(experiments):
         if experiment["rate"] == "pdr":
-            experiments[i]["start_tx_rate"] = start_tx_rate
-            if line_rate is not None:
-                experiments[i]["line_rate"] = line_rate
+            experiments[i]["start_tx_rate"] = options.start_tx_rate
+            if options.line_rate is not None:
+                experiments[i]["line_rate"] = options.line_rate
     # Generate configs
-    configs = generate_configs(experiments, size)
+    configs = generate_configs(experiments, options.size)
     if not write:
         return configs
     # Write the PROXY configuration
@@ -188,31 +234,32 @@ def generate():
     parser = OptionParser()
     parser.add_option("-t", "--type", dest="type", type="string", default="plain", help="Test type {plain|transit|end|proxy|all}")
     parser.add_option("-s", "--size", dest="size", type="string", default="all", help="Size type {max|min|all}")
-    parser.add_option("--runs", dest="runs", type="int", default=RUN, help="Number of runs")
+    parser.add_option("--runs", dest="runs", type="int", default=RUN, help="Number of options.runs")
     parser.add_option("--tx_port", dest="tx_port", type="int", default=0, help="Tx port")
     parser.add_option("--rx_port", dest="rx_port", type="int", default=1, help="Rx port")
     parser.add_option("--lb_dlr", dest="lb_dlr", type="float", default=0.995, help="PDR Lower bound for delivery ratio")
-    parser.add_option("--rate", dest="rate", type="string", default="100%", help="MRR rate as string (100%)")
-    parser.add_option("--dup_rate", dest="dup_rate", type="float", default=0.0, help="Duplication rate (0.0-1.0)")
+    parser.add_option("--mrr_rate", dest="mrr_rate", type="string", default="100%", help="MRR rate as string (100%)")
     parser.add_option("--ndr_window", dest="ndr_window", type="float", default=100, help="Window for NDR(epsilon) in pps")
     parser.add_option("--start_tx_rate", dest="start_tx_rate", type="float", default=1.0, help="Starting tx rate for NDR in pps")
     parser.add_option("--line_rate", dest="line_rate", type="float", default=None, help="Line rate for NDR in pps")
+    parser.add_option("--no_mrr", dest="mrr", default=True, action="store_false", help="Enable MRR")
+    parser.add_option("--no_pdr", dest="pdr", default=True, action="store_false", help="Enable PDR")
 
     # Parse input parameters
     (options, args) = parser.parse_args()
     # Run proper generator according to the type
     if options.type == "plain":
-        generate_plain(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_plain(options, True)
     elif options.type == "transit":
-        generate_transit(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_transit(options, True)
     elif options.type == "end":
-        generate_end(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_end(options, True)
     elif options.type == "proxy":
-        generate_proxy(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_proxy(options, True)
     elif options.type == "all":
-        generate_all(options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_all(options)
     elif options.type == "quic":
-        generate_quic(True, options.size, options.runs, options.tx_port, options.rx_port, options.lb_dlr, options.rate, options.ndr_window, options.start_tx_rate, options.line_rate)
+        generate_quic(options, True)
     else:
         print("Type %s Not Supported Yet" % options.type)
 
