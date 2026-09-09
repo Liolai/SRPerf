@@ -46,9 +46,9 @@ class MRR(object):
             # Build the experiment passing a given rate
             experiment = factory.build(config.mrr_rate)
             # Run and collect the output of the experiment
-            print("Started Run %s" % iteration)
+            print("Run %s started..." % iteration)
             run = experiment.run().runs[0]
-            print("Finished Run %s" % iteration)
+            print("Run %s completed..." % iteration)
             # Calculate mrr and then store in the array
             mrr = run.getRxTotalPackets() / DURATION
             results.append(mrr)
