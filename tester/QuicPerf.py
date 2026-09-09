@@ -109,21 +109,22 @@ class QuicPerfDriver:
                 txTotalPackets = run.getTxTotalPackets()
                 rxTotalPackets = run.getRxTotalPackets()
 
-                # Let's check if rxTotalPacket is greater than txTotalPacket.
-                # If this is the case (due to lldp packets) we normalize the
-                # number of received packets with the 'txTotalPackets' counter.
-                # Anyway, if the rxTotalPackets is > rxTotalPacketsTolerance then
-                # some issues occurred... and we need to skip the run in order
-                # to let the results valid.
-                rxTotalPacketsTolerance = txTotalPackets + (1.0 / 1000.0) * txTotalPackets + 5
-                if rxTotalPackets > rxTotalPacketsTolerance:
-                    print("Run ({0}) - Warning rxTotalPackets ({1} > {2}) exceeded the threshold. Run will be skipped.".format(i, float(rxTotalPackets), float(rxTotalPacketsTolerance)))
+                # Disabled check on duplicate packets becaus
+                # # Let's check if rxTotalPacket is greater than txTotalPacket.
+                # # If this is the case (due to lldp packets) we normalize the
+                # # number of received packets with the 'txTotalPackets' counter.
+                # # Anyway, if the rxTotalPackets is > rxTotalPacketsTolerance then
+                # # some issues occurred... and we need to skip the run in order
+                # # to let the results valid.
+                # rxTotalPacketsTolerance = txTotalPackets + (1.0 / 1000.0) * txTotalPackets + 5
+                # if rxTotalPackets > rxTotalPacketsTolerance:
+                #     print("Run ({0}) - Warning rxTotalPackets ({1} > {2}) exceeded the threshold. Run will be skipped.".format(i, float(rxTotalPackets), float(rxTotalPacketsTolerance)))
 
-                    continue
+                #     continue
 
-                # We already checked that rxTotalPacket <= txTotalPackets + 1%
-                if rxTotalPackets > txTotalPackets:
-                    rxTotalPackets = txTotalPackets
+                # # We already checked that rxTotalPacket <= txTotalPackets + 1%
+                # if rxTotalPackets > txTotalPackets:
+                #     rxTotalPackets = txTotalPackets
 
                 # We evaluate DR
                 dl = rxTotalPackets / (1.0 * txTotalPackets)
