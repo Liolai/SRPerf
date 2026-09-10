@@ -212,7 +212,9 @@ def generate_quic(options, write=True):
         )
     if options.mrr:
         experiments.extend(
-            {"type": "quic", "experiment": "quic", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            [
+                {"type": "quic", "experiment": "quic", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+            ]
         )
 
     for i, experiment in enumerate(experiments):
