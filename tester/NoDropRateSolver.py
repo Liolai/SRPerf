@@ -118,7 +118,8 @@ class NoDropRateSolver:
                          self.rateUpperBound, self.delRatioUpperBound,
                          curRate, curDelRatio, self.dlThreshold)
                 self.results.append(tuple)
-
+                run = output.runs[-1]
+                print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}")
                 print('Log search [{0:f}/{1:f},{2:f}/{3:f}], '
                       '<probed:{4:f}/DR:{5:f}>, Threshold:{6:f}'.
                       format(tuple[0], tuple[1], tuple[2], tuple[3], tuple[4],
