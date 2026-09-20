@@ -14,13 +14,11 @@ class RateType(Enum):
 
 
 class NoDropRateSolver:
-
-    def __init__(self, minTxRate, maxTxRate, epsilon, drThreshold, rateType,
-                 experimentFactory):
+    def __init__(self, minTxRate, maxTxRate, epsilon, drThreshold, rateType, experimentFactory):
         # We check the input parameters
         self.checkAndSet(minTxRate, maxTxRate, epsilon, drThreshold, rateType)
-        if (experimentFactory is None):
-            self.printAndDie('Experiment must be set.', 1)
+        if experimentFactory is None:
+            self.printAndDie("Experiment must be set.", 1)
         self.experimentFactory = experimentFactory
 
         self.delRatioLowerBound = 0
@@ -34,29 +32,29 @@ class NoDropRateSolver:
 
     # It prints a message and exits returning the specified code.
     def printAndDie(self, message, exitCode):
-        print('{0:s}'.format(message))
+        print("{0:s}".format(message))
         sys.exit(exitCode)
 
     # It sanitizes input parameters.
     def checkAndSet(self, minTxRate, maxTxRate, epsilon, drThreshold, rateType):
-        if (0 >= drThreshold  or 1 < drThreshold):
+        if 0 >= drThreshold:
             self.printAndDie("Threshold value is not valid.", 1)
 
-        if (0 > minTxRate):
-            self.printAndDie('Invalid searching window lower bound value.', 1)
-        if (minTxRate > maxTxRate):
-            self.printAndDie('Invalid searching window boundaries.', 1)
+        if 0 > minTxRate:
+            self.printAndDie("Invalid searching window lower bound value.", 1)
+        if minTxRate > maxTxRate:
+            self.printAndDie("Invalid searching window boundaries.", 1)
 
-        if (0 > epsilon):
+        if 0 > epsilon:
             self.printAndDie("Epsilon can not be less than zero.", 1)
-        if (epsilon > (maxTxRate - minTxRate)):
+        if epsilon > (maxTxRate - minTxRate):
             self.printAndDie("Epsilon is not valid.", 1)
 
-        if (RateType.INVALID == rateType):
-            self.printAndDie('Invalid rate type, allowed: { PERCENTAGE, PPS }.', 1)
-        if (RateType.PERCENTAGE == rateType):
-            if (maxTxRate > 100.0):
-                self.printAndDie('Invalid searching window upper bound value.', 1)
+        if RateType.INVALID == rateType:
+            self.printAndDie("Invalid rate type, allowed: { PERCENTAGE, PPS }.", 1)
+        if RateType.PERCENTAGE == rateType:
+            if maxTxRate > 100.0:
+                self.printAndDie("Invalid searching window upper bound value.", 1)
 
         self.rateLowerBound = minTxRate
         self.rateUpperBound = maxTxRate
@@ -69,8 +67,8 @@ class NoDropRateSolver:
         # append the '%' symbol at the txRate in case of PERCENTAGE or nothing
         # if the txRate is expressed in PPS.
         txRate = str(txRate)
-        if (RateType.PERCENTAGE == self.rateType):
-            txRate = '{0:s}%'.format(txRate)
+        if RateType.PERCENTAGE == self.rateType:
+            txRate = "{0:s}%".format(txRate)
 
         experiment = self.experimentFactory.build(txRate)
         output = experiment.run()
@@ -92,21 +90,20 @@ class NoDropRateSolver:
         output = self.buildAndRunExperiment(curRate)
         self.delRatioLowerBound = output.getAverageDR()
 
-        if (self.delRatioLowerBound < self.dlThreshold):
-            self.printAndDie('Invalid lower bound for the current searching '
-                             'window: DR is below the threshold.', 1)
+        if self.delRatioLowerBound < self.dlThreshold:
+            self.printAndDie("Invalid lower bound for the current searching window: DR is below the threshold.", 1)
 
         # Let's find out the PDR value
-        while(not stop):
+        while not stop:
             solutionInterval = math.fabs(self.rateUpperBound - self.rateLowerBound)
-            if (solutionInterval <= self.eps):
+            if solutionInterval <= self.eps:
                 stop = True
             else:
                 curRate = (self.rateUpperBound + self.rateLowerBound) / 2.0
                 output = self.buildAndRunExperiment(curRate)
                 curDelRatio = output.getAverageDR()
 
-                if (curDelRatio < self.dlThreshold):
+                if curDelRatio < self.dlThreshold:
                     self.rateUpperBound = curRate
                     self.delRatioUpperBound = curDelRatio
                 else:
@@ -114,16 +111,11 @@ class NoDropRateSolver:
                     self.delRatioLowerBound = curDelRatio
 
                 # We create a tuple that collects relevant data for this iteration
-                tuple = (self.rateLowerBound, self.delRatioLowerBound,
-                         self.rateUpperBound, self.delRatioUpperBound,
-                         curRate, curDelRatio, self.dlThreshold)
+                tuple = (self.rateLowerBound, self.delRatioLowerBound, self.rateUpperBound, self.delRatioUpperBound, curRate, curDelRatio, self.dlThreshold)
                 self.results.append(tuple)
                 run = output.runs[-1]
                 print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}")
-                print('Log search [{0:f}/{1:f},{2:f}/{3:f}], '
-                      '<probed:{4:f}/DR:{5:f}>, Threshold:{6:f}'.
-                      format(tuple[0], tuple[1], tuple[2], tuple[3], tuple[4],
-                             tuple[5], tuple[6]))
+                print("Log search [{0:f}/{1:f},{2:f}/{3:f}], <probed:{4:f}/DR:{5:f}>, Threshold:{6:f}".format(tuple[0], tuple[1], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6]))
 
     def solve(self):
         print("Solver started...")
