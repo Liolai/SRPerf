@@ -61,15 +61,15 @@ def generate_plain(options, write=True):
     if options.pdr:
         experiments.extend(
             [
-                {"type": "plain", "experiment": "ipv6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "plain", "experiment": "ipv4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "plain", "experiment": "ipv6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "plain", "experiment": "ipv4", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
             ]
         )
     if options.mrr:
         experiments.extend(
             [
-                {"type": "plain", "experiment": "ipv6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "plain", "experiment": "ipv4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "plain", "experiment": "ipv6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "plain", "experiment": "ipv4", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
             ]
         )
 
@@ -94,19 +94,19 @@ def generate_transit(options, write=True):
     if options.pdr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "t_insert_v6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "t_insert_v6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
             ]
         )
     if options.mrr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "t_insert_v6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_encaps_v6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_encaps_v4", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_encaps_l2", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "t_insert_v6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
             ]
         )
     for i, experiment in enumerate(experiments):
@@ -129,29 +129,29 @@ def generate_end(options, write=True):
     if options.pdr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "end", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_x", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_t", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_b6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_dx6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_dx4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_dx2", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_dt6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_x", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_t", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_b6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx4", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dx2", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_dt6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
             ]
         )
     if options.mrr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "end", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_x", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_t", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_b6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_dx6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_dx4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_dx2", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_dt6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_x", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_t", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_b6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_b6_encaps", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx4", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dx2", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_dt6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
             ]
         )
 
@@ -175,17 +175,17 @@ def generate_proxy(options, write=True):
     if options.pdr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "end_ad6", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_ad4", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
-                {"type": "srv6", "experiment": "end_am", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_ad6", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_ad4", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "srv6", "experiment": "end_am", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
             ]
         )
     if options.mrr:
         experiments.extend(
             [
-                {"type": "srv6", "experiment": "end_ad6", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_ad4", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
-                {"type": "srv6", "experiment": "end_am", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_ad6", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_ad4", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "srv6", "experiment": "end_am", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
             ]
         )
     for i, experiment in enumerate(experiments):
@@ -207,13 +207,13 @@ def generate_quic(options, write=True):
     if options.pdr:
         experiments.extend(
             [
-                {"type": "quic", "experiment": "quic", "rate": "pdr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
+                {"type": "quic", "experiment": "quic", "rate": "pdr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "lb_dlr": options.lb_dlr, "ndr_window": options.ndr_window},
             ]
         )
     if options.mrr:
         experiments.extend(
             [
-                {"type": "quic", "experiment": "quic", "rate": "mrr", "run": options.runs, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
+                {"type": "quic", "experiment": "quic", "rate": "mrr", "run": options.runs, "duration": options.duration, "tx_port": options.tx_port, "rx_port": options.rx_port, "mrr_rate": options.mrr_rate},
             ]
         )
 
@@ -246,7 +246,7 @@ def generate():
     parser.add_option("--line_rate", dest="line_rate", type="float", default=None, help="Line rate for NDR in pps")
     parser.add_option("--no_mrr", dest="mrr", default=True, action="store_false", help="Enable MRR")
     parser.add_option("--no_pdr", dest="pdr", default=True, action="store_false", help="Enable PDR")
-
+    parser.add_option("--duration", dest="duration", type="int", default=10, help="Duration of the tests in seconds")
     # Parse input parameters
     (options, args) = parser.parse_args()
     # Run proper generator according to the type

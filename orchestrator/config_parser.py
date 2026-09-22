@@ -11,7 +11,7 @@ from collections import namedtuple
 LINE_RATES = {"ipv6": 12253000, "ipv4": 12253000, "t_encaps_v6": 12253000, "t_encaps_v4": 12253000, "t_encaps_l2": 12253000, "t_insert_v6": 12253000, "end": 6868000, "end_x": 6868000, "end_t": 6868000, "end_b6": 6868000, "end_b6_encaps": 6868000, "end_dx6": 6868000, "end_dx4": 6868000, "end_dx2": 6377000, "end_dt6": 6377000, "end_ad6": 6377000, "end_ad4": 6377000, "end_am": 6377000, "quic": 6000000}
 
 # Config utilities
-Config = namedtuple("Config", ["type", "experiment", "size", "rate", "run", "line_rate", "tx_port", "rx_port", "lb_dlr", "mrr_rate", "ndr_window", "start_tx_rate"])
+Config = namedtuple("Config", ["type", "experiment", "size", "rate", "run", "line_rate", "tx_port", "rx_port", "lb_dlr", "mrr_rate", "ndr_window", "start_tx_rate", "duration"])
 
 
 # Parser of the configuration
@@ -47,7 +47,8 @@ class ConfigParser(object):
                     rx_port=config["rx_port"],
                     lb_dlr=config["lb_dlr"] if "lb_dlr" in config else 0.995,
                     mrr_rate=config["mrr_rate"] if "mrr_rate" in config else "100%",
-                    ndr_window=config["ndr_window"] if "ndr_window" in config else 100
+                    ndr_window=config["ndr_window"] if "ndr_window" in config else 100,
+                    duration=config["duration"] if "duration" in config else 10
                 )
             )
 

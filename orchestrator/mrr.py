@@ -40,9 +40,9 @@ class MRR(object):
             print("MRR %s-%s Run %s" % (config.type, config.experiment, iteration))
             # At first we create the experiment factory with the right parameters
             if config.type == "quic":
-                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, config.duration)
             else:
-                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, config.duration)
             # Build the experiment passing a given rate
             experiment = factory.build(config.mrr_rate)
             # Run and collect the output of the experiment
@@ -50,8 +50,8 @@ class MRR(object):
             run = experiment.run().runs[0]
             print("Run %s completed..." % iteration)
             # Calculate mrr and then store in the array
-            print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Duration: {DURATION}")
-            print(f"TxRate: {run.getTxTotalPackets() / DURATION}, RxRate: {run.getRxTotalPackets() / DURATION}")
-            mrr = run.getRxTotalPackets() / DURATION
+            print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Duration: {config.duration}")
+            print(f"TxRate: {run.getTxTotalPackets() / config.duration}, RxRate: {run.getRxTotalPackets() / config.duration}")
+            mrr = run.getRxTotalPackets() / config.duration
             results.append(mrr)
         return results

@@ -43,9 +43,9 @@ class PDR(object):
             print("PDR %s-%s Run %s" % (config.type, config.experiment, iteration))
             # At first we create the experiment factory with the right parameters
             if config.type == "quic":
-                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+                factory = QuicExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, config.duration)
             else:
-                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, DURATION)
+                factory = TrexExperimentFactory(TREX_SERVER, config.tx_port, config.rx_port, "%s/%s.pcap" % (PCAP_HOME, ConfigParser.get_packet(config)), SAMPLES, config.duration)
             # Then we instantiate the NDR solver with the above defined parameters
             ndr = NoDropRateSolver(config.start_tx_rate, config.line_rate, config.ndr_window, config.lb_dlr, RateType.PPS, factory)
             ndr.solve()
