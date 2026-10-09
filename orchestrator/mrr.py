@@ -50,7 +50,7 @@ class MRR(object):
             run = experiment.run().runs[0]
             print("Run %s completed..." % iteration)
             # Calculate mrr and then store in the array
-            print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Duration: {config.duration}")
+            print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Marked: {run.getRxMarkedPackets()}, Duration: {config.duration}")
             print(f"TxRate: {run.getTxTotalPackets() / config.duration}, RxRate: {run.getRxTotalPackets() / config.duration}")
             mrr = run.getRxTotalPackets() / config.duration
             results.append(mrr)

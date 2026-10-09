@@ -59,6 +59,9 @@ class QuicOutput:
     def setRxTotalPackets(self, tPackets):
         self.output["rx"]["total_packets"] = tPackets
 
+    def setRxMarkedPackets(self, tPackets):
+        self.output["rx"]["marked_packets"] = tPackets
+
     def setTxDuration(self, duration):
         self.output["tx"]["duration"] = duration
 
@@ -79,6 +82,9 @@ class QuicOutput:
 
     def getRxTotalPackets(self):
         return self.output["rx"]["total_packets"]
+
+    def getRxMarkedPackets(self):
+        return self.output["rx"]["marked_packets"]
 
     def getTxDuration(self):
         return self.output["tx"]["duration"]
@@ -157,13 +163,7 @@ class QuicDriver:
             # Enable service mode on Rx port
             client.set_service_mode(ports=[self.rxPort], enabled=True)
             service_mode_enabled = True
-            # Start capture while applying a BPF filter (e.g., exclude TLL == 255)
-            capture_info = client.start_capture(
-                rx_ports=[self.rxPort],
-                bpf_filter="ip[8] == 255",  # BPF syntax to discard marked  packets
-                limit=1000000,
-                snaplen=128,
-            )
+
             # For safety reasons we reset any counter.
             client.reset(ports=allPorts)
 
@@ -179,6 +179,14 @@ class QuicDriver:
             # ports and streams, because between client creation and
             # start of the experiment some packets may be received on ports.
             client.clear_stats()
+
+            # Start capture while applying a BPF filter (e.g., exclude TLL == 255)
+            capture_info = client.start_capture(
+                rx_ports=[self.rxPort],
+                # bpf_filter="ip[8] > 200",  # BPF syntax to discard marked  packets
+                limit=1000,
+                snaplen=128,
+            )
 
             client.start(ports=[self.txPort], mult=self.rate, duration=self.duration)
 
@@ -196,14 +204,17 @@ class QuicDriver:
             # We wait for a bit in order to let the counters be stable
             sleep(1)
             captured_packets = list()
+            print(f"get_capture_status{client.get_capture_status()}")
             client.stop_capture(capture_info["id"], output=captured_packets)
+            print(f"len(captured_packets): {len(captured_packets)}")
             # We retrieve statistics from Tx and Rx ports.
             txStats = client.get_xstats(self.txPort)
             rxStats = client.get_xstats(self.rxPort)
             # tOutput.setTxTotalPackets(txStats["tx_total_packets"])
             # tOutput.setRxTotalPackets(rxStats["rx_total_packets"])
             tOutput.setTxTotalPackets(txStats["tx_phy_packets"])
-            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"] - len(captured_packets))
+            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"])
+            tOutput.setRxMarkedPackets(len(captured_packets))
 
         except STLError as e:
             print(e)
@@ -212,17 +223,13 @@ class QuicDriver:
         finally:
             if service_mode_enabled:
                 try:
-                    client.set_service_mode(
-                        ports=[self.rxPort],
-                        enabled=False
-                    )
+                    client.set_service_mode(ports=[self.rxPort], enabled=False)
                 except STLError as e:
                     print("Could not disable service mode: {}".format(e))
             try:
                 client.disconnect()
             except Exception as e:
                 print("TRex disconnect warning: {}".format(e))
-
 
         return tOutput
 
