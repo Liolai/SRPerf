@@ -8,7 +8,7 @@ import math
 from warnings import catch_warnings
 from time import sleep
 import QuicPktBuilder
-import scapy
+import scapy, scapy.all
 
 # get TRex APIs.
 sys.path.insert(0, "/opt/trex-core-3.08/trex_client/interactive/")
@@ -152,6 +152,16 @@ class QuicDriver:
 
             client.connect()
 
+            # Enable service mode on Rx port
+            client.set_service_mode(ports=[self.rxPort], enabled=True)
+
+            # Start capture while applying a BPF filter (e.g., exclude TLL == 255)
+            capture_info = client.start_capture(
+                rx_ports=[self.rxPort],
+                bpf_filter="ip[8] == 255",  # BPF syntax to discard marked  packets
+                limit=1000000,
+                snaplen=128,
+            )
             # For safety reasons we reset any counter.
             client.reset(ports=allPorts)
 
@@ -183,20 +193,22 @@ class QuicDriver:
 
             # We wait for a bit in order to let the counters be stable
             sleep(1)
-
+            captured_packets = list()
+            client.stop_capture(capture_info["id"], output=captured_packets)
             # We retrieve statistics from Tx and Rx ports.
             txStats = client.get_xstats(self.txPort)
             rxStats = client.get_xstats(self.rxPort)
             # tOutput.setTxTotalPackets(txStats["tx_total_packets"])
             # tOutput.setRxTotalPackets(rxStats["rx_total_packets"])
             tOutput.setTxTotalPackets(txStats["tx_phy_packets"])
-            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"])
+            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"] - len(captured_packets))
 
         except STLError as e:
             print(e)
             sys.exit(1)
 
         finally:
+            client.set_service_mode(ports=[self.rxPort], enabled=False)
             client.disconnect()
 
         return tOutput
@@ -204,6 +216,6 @@ class QuicDriver:
 
 # Entry point used for testing
 if __name__ == "__main__":
-    driver = QuicDriver("127.0.0.1", 0, 1, "pcap/trex-pcap-files/plain-ipv6-64.pcap", "100%", 10)
+    driver = QuicDriver("127.0.0.1", 0, 1, "pcap/trex-pcap-files/quic-quic-64.pcap", "100%", 10)
     output = driver.run()
     print(output.toString())
