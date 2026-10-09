@@ -142,7 +142,7 @@ class QuicDriver:
 
         # We create the client
         client = STLClient(server=self.server)
-
+        service_mode_enabled = False
         try:
             profile = None
             stream = None
@@ -152,9 +152,11 @@ class QuicDriver:
 
             client.connect()
 
+            # Acquire the ports before configuring them.
+            client.acquire(ports=allPorts)
             # Enable service mode on Rx port
             client.set_service_mode(ports=[self.rxPort], enabled=True)
-
+            service_mode_enabled = True
             # Start capture while applying a BPF filter (e.g., exclude TLL == 255)
             capture_info = client.start_capture(
                 rx_ports=[self.rxPort],
@@ -208,8 +210,19 @@ class QuicDriver:
             sys.exit(1)
 
         finally:
-            client.set_service_mode(ports=[self.rxPort], enabled=False)
-            client.disconnect()
+            if service_mode_enabled:
+                try:
+                    client.set_service_mode(
+                        ports=[self.rxPort],
+                        enabled=False
+                    )
+                except STLError as e:
+                    print("Could not disable service mode: {}".format(e))
+            try:
+                client.disconnect()
+            except Exception as e:
+                print("TRex disconnect warning: {}".format(e))
+
 
         return tOutput
 
