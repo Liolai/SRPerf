@@ -59,9 +59,6 @@ class QuicOutput:
     def setRxTotalPackets(self, tPackets):
         self.output["rx"]["total_packets"] = tPackets
 
-    def setRxMarkedPackets(self, tPackets):
-        self.output["rx"]["marked_packets"] = tPackets
-
     def setTxDuration(self, duration):
         self.output["tx"]["duration"] = duration
 
@@ -83,9 +80,6 @@ class QuicOutput:
     def getRxTotalPackets(self):
         return self.output["rx"]["total_packets"]
 
-    def getRxMarkedPackets(self):
-        return self.output["rx"]["marked_packets"]
-
     def getTxDuration(self):
         return self.output["tx"]["duration"]
 
@@ -100,6 +94,15 @@ class QuicOutput:
 
     def toString(self):
         return str(self.output)
+
+
+def wait_files(files: list, tick_time=0.1, timeout: int = 10):
+    counter = 0
+    while any(not os.path.isfile(f) for f in files):
+        sleep(tick_time)
+        counter += 1
+        if counter > timeout:
+            break
 
 
 class QuicDriver:
@@ -148,7 +151,6 @@ class QuicDriver:
 
         # We create the client
         client = STLClient(server=self.server)
-        service_mode_enabled = False
         try:
             profile = None
             stream = None
@@ -157,12 +159,6 @@ class QuicDriver:
             allPorts = list(set([self.txPort, self.rxPort]))
 
             client.connect()
-
-            # Acquire the ports before configuring them.
-            client.acquire(ports=allPorts)
-            # Enable service mode on Rx port
-            client.set_service_mode(ports=[self.rxPort], enabled=True)
-            service_mode_enabled = True
 
             # For safety reasons we reset any counter.
             client.reset(ports=allPorts)
@@ -180,14 +176,6 @@ class QuicDriver:
             # start of the experiment some packets may be received on ports.
             client.clear_stats()
 
-            # Start capture while applying a BPF filter (e.g., exclude TLL == 255)
-            capture_info = client.start_capture(
-                rx_ports=[self.rxPort],
-                # bpf_filter="ip[8] > 200",  # BPF syntax to discard marked  packets
-                limit=1000,
-                snaplen=128,
-            )
-
             client.start(ports=[self.txPort], mult=self.rate, duration=self.duration)
 
             # Now we block until all packets have been sent/received. To
@@ -203,33 +191,56 @@ class QuicDriver:
 
             # We wait for a bit in order to let the counters be stable
             sleep(1)
-            captured_packets = list()
-            print(f"get_capture_status{client.get_capture_status()}")
-            client.stop_capture(capture_info["id"], output=captured_packets)
-            print(f"len(captured_packets): {len(captured_packets)}")
+            if os.environ.get("MANUAL_SYNC") == "1":
+                input("Waiting for input...")
+            else:
+                print("Waiting for server side packet data")
+                wait_files(["/tmp/srperf_quic_driver/dropped_packets.txt", "/tmp/srperf_quic_driver/duplicated_packets.txt"])
+
+            dropped_packets = 0
+            duplicated_packets = 0
+            with open(f"/tmp/srperf_quic_driver/dropped_packets.txt", "r") as f:
+                try:
+                    dropped_packets = int(f.read())
+                    print(f"Dropped packets: {dropped_packets}")
+                except ValueError:
+                    pass
+            with open(f"/tmp/srperf_quic_driver/duplicated_packets.txt", "r") as f:
+                try:
+                    duplicated_packets = int(f.read())
+                    print(f"Duplicated packets: {duplicated_packets}")
+                except ValueError:
+                    pass
+
             # We retrieve statistics from Tx and Rx ports.
             txStats = client.get_xstats(self.txPort)
             rxStats = client.get_xstats(self.rxPort)
             # tOutput.setTxTotalPackets(txStats["tx_total_packets"])
             # tOutput.setRxTotalPackets(rxStats["rx_total_packets"])
-            tOutput.setTxTotalPackets(txStats["tx_phy_packets"])
-            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"])
-            tOutput.setRxMarkedPackets(len(captured_packets))
+            if dropped_packets != 0:
+                print(f"Decreased Tx packets by {dropped_packets} packets")
+            if duplicated_packets != 0:
+                print(f"Decreased Rx packets by {duplicated_packets} packets")
+            tOutput.setTxTotalPackets(txStats["tx_phy_packets"] - dropped_packets)
+            tOutput.setRxTotalPackets(rxStats["rx_phy_packets"] - duplicated_packets)
 
         except STLError as e:
             print(e)
             sys.exit(1)
 
         finally:
-            if service_mode_enabled:
-                try:
-                    client.set_service_mode(ports=[self.rxPort], enabled=False)
-                except STLError as e:
-                    print("Could not disable service mode: {}".format(e))
             try:
                 client.disconnect()
             except Exception as e:
                 print("TRex disconnect warning: {}".format(e))
+            try:
+                os.remove("/tmp/srperf_quic_driver/dropped_packets.txt")
+            except IOError as e:
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+            try:
+                os.remove("/tmp/srperf_quic_driver/duplicated_packets.txt")
+            except IOError as e:
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
         return tOutput
 
