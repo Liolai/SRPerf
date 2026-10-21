@@ -98,11 +98,14 @@ class QuicOutput:
 
 def wait_files(files: list, tick_time=0.1, timeout: int = 10):
     counter = 0
-    while any(not os.path.isfile(f) for f in files):
+    while counter < timeout:
+        try:
+            if all(os.path.exists(f) and os.path.isfile(f) for f in files):
+                break
+        except IOError as e:
+            pass
         sleep(tick_time)
-        counter += 1
-        if counter > timeout:
-            break
+        counter += tick_time
 
 
 class QuicDriver:
@@ -148,12 +151,12 @@ class QuicDriver:
         tOutput.setRxPort(self.rxPort)
         tOutput.setRequestedTxRate(self.rate)
         tOutput.setTxDuration(self.duration)
+        drop_file = "/tmp/srperf_quic_driver/dropped_packets.txt"
+        dup_file = "/tmp/srperf_quic_driver/duplicated_packets.txt"
 
         # We create the client
         client = STLClient(server=self.server)
         try:
-            profile = None
-            stream = None
             txStats = None
             rxStats = None
             allPorts = list(set([self.txPort, self.rxPort]))
@@ -191,26 +194,27 @@ class QuicDriver:
 
             # We wait for a bit in order to let the counters be stable
             sleep(1)
+            os.makedirs("/tmp/srperf_quic_driver", exist_ok=True)
             if os.environ.get("MANUAL_SYNC") == "1":
                 input("Waiting for input...")
             else:
                 print("Waiting for server side packet data")
-                wait_files(["/tmp/srperf_quic_driver/dropped_packets.txt", "/tmp/srperf_quic_driver/duplicated_packets.txt"])
+                wait_files([drop_file, dup_file])
 
             dropped_packets = 0
             duplicated_packets = 0
-            with open(f"/tmp/srperf_quic_driver/dropped_packets.txt", "r") as f:
-                try:
+            try:
+                with open(drop_file, "r") as f:
                     dropped_packets = int(f.read())
                     print(f"Dropped packets: {dropped_packets}")
-                except ValueError:
-                    pass
-            with open(f"/tmp/srperf_quic_driver/duplicated_packets.txt", "r") as f:
-                try:
+            except (ValueError, IOError) as e:
+                print(f"Exception while accessing {drop_file}: {e}")
+            try:
+                with open(f"/tmp/srperf_quic_driver/duplicated_packets.txt", "r") as f:
                     duplicated_packets = int(f.read())
                     print(f"Duplicated packets: {duplicated_packets}")
-                except ValueError:
-                    pass
+            except (ValueError, IOError) as e:
+                print(f"Exception while accessing {dup_file}: {e}")
 
             # We retrieve statistics from Tx and Rx ports.
             txStats = client.get_xstats(self.txPort)
@@ -234,11 +238,11 @@ class QuicDriver:
             except Exception as e:
                 print("TRex disconnect warning: {}".format(e))
             try:
-                os.remove("/tmp/srperf_quic_driver/dropped_packets.txt")
+                os.remove(drop_file)
             except IOError as e:
                 print("I/O error({0}): {1}".format(e.errno, e.strerror))
             try:
-                os.remove("/tmp/srperf_quic_driver/duplicated_packets.txt")
+                os.remove(dup_file)
             except IOError as e:
                 print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
