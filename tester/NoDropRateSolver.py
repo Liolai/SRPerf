@@ -81,6 +81,7 @@ class NoDropRateSolver:
         solutionInterval = 0.0
         curRate = 0.0
         curDelRatio = 0.0
+        rateLowerBoundEffective = 0.0
 
         # We have removed the Exponential Search, so we need to be sure that
         # lower bound delivery ratio is above the threshold. Indeed, if the
@@ -102,6 +103,7 @@ class NoDropRateSolver:
                 curRate = (self.rateUpperBound + self.rateLowerBound) / 2.0
                 output = self.buildAndRunExperiment(curRate)
                 curDelRatio = output.getAverageDR()
+                run = output.runs[-1]
 
                 if curDelRatio < self.dlThreshold:
                     self.rateUpperBound = curRate
@@ -109,11 +111,12 @@ class NoDropRateSolver:
                 else:
                     self.rateLowerBound = curRate
                     self.delRatioLowerBound = curDelRatio
+                    # Usually the same as rateLowerBound, but in case the TxRate is modified by the driver might be different.
+                    rateLowerBoundEffective = run.getTxTotalPackets() / run.getTxDuration()
 
                 # We create a tuple that collects relevant data for this iteration
-                tuple = (self.rateLowerBound, self.delRatioLowerBound, self.rateUpperBound, self.delRatioUpperBound, curRate, curDelRatio, self.dlThreshold)
+                tuple = (self.rateLowerBound, self.delRatioLowerBound, self.rateUpperBound, self.delRatioUpperBound, curRate, curDelRatio, self.dlThreshold, rateLowerBoundEffective)
                 self.results.append(tuple)
-                run = output.runs[-1]
                 print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Duration:{self.experimentFactory.duration}")
                 print("Log search [{0:f}/{1:f},{2:f}/{3:f}], <probed:{4:f}/DR:{5:f}>, Threshold:{6:f}".format(tuple[0], tuple[1], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6]))
 

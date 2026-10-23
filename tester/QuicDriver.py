@@ -221,10 +221,6 @@ class QuicDriver:
             rxStats = client.get_xstats(self.rxPort)
             # tOutput.setTxTotalPackets(txStats["tx_total_packets"])
             # tOutput.setRxTotalPackets(rxStats["rx_total_packets"])
-            if dropped_packets != 0:
-                print(f"Decreased Tx packets by {dropped_packets} packets")
-            if duplicated_packets != 0:
-                print(f"Decreased Rx packets by {duplicated_packets} packets")
             tOutput.setTxTotalPackets(txStats["tx_phy_packets"] - dropped_packets)
             tOutput.setRxTotalPackets(rxStats["rx_phy_packets"] - duplicated_packets)
 

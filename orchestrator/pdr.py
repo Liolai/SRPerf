@@ -50,5 +50,5 @@ class PDR(object):
             ndr = NoDropRateSolver(config.start_tx_rate, config.line_rate, config.ndr_window, config.lb_dlr, RateType.PPS, factory)
             ndr.solve()
             # Once finished let's collect the results
-            results.append(ndr.getSW()[0])
+            results.append(ndr.getSW()[-1])
         return results
