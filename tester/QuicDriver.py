@@ -153,6 +153,7 @@ class QuicDriver:
         tOutput.setTxDuration(self.duration)
         drop_file = "/tmp/srperf_quic_driver/dropped_packets.txt"
         dup_file = "/tmp/srperf_quic_driver/duplicated_packets.txt"
+        ready_file = "/tmp/srperf_quic_driver/ready.txt"
 
         # We create the client
         client = STLClient(server=self.server)
@@ -174,6 +175,13 @@ class QuicDriver:
             # We use only one port to multiplex altogether streams.
             client.add_streams(streams, ports=[self.txPort])
 
+            if os.environ.get("ENABLE_SYNC"):
+                if os.environ.get("MANUAL_SYNC"):
+                    print("Waiting for server side ready")
+                    input()
+                else:
+                    print("Waiting for server side ready")
+                    wait_files([ready_file])
             # Even if we create a new client it is better to reset also
             # ports and streams, because between client creation and
             # start of the experiment some packets may be received on ports.
@@ -192,30 +200,34 @@ class QuicDriver:
             if warn:
                 tOutput.setWarnings(warn)
 
-            # We wait for a bit in order to let the counters be stable
-            sleep(1)
-            os.makedirs("/tmp/srperf_quic_driver", exist_ok=True)
-            if os.environ.get("MANUAL_SYNC") == "1":
-                input("Waiting for input...")
-            else:
-                print("Waiting for server side packet data")
-                wait_files([drop_file, dup_file])
-
             dropped_packets = 0
             duplicated_packets = 0
-            try:
-                with open(drop_file, "r") as f:
-                    dropped_packets = int(f.read())
-                    print(f"Dropped packets: {dropped_packets}")
-            except (ValueError, IOError) as e:
-                print(f"Exception while accessing {drop_file}: {e}")
-            try:
-                with open(f"/tmp/srperf_quic_driver/duplicated_packets.txt", "r") as f:
-                    duplicated_packets = int(f.read())
-                    print(f"Duplicated packets: {duplicated_packets}")
-            except (ValueError, IOError) as e:
-                print(f"Exception while accessing {dup_file}: {e}")
+            if os.environ.get("ENABLE_SYNC"):
+                os.makedirs("/tmp/srperf_quic_driver", exist_ok=True)
+                if os.environ.get("MANUAL_SYNC"):
+                    print("Waiting for server side packet data")
+                    print("Dropped packets: ")
+                    dropped_packets = int(input())
+                    print("Duplicate packets: ")
+                    duplicated_packets = int(input())
+                else:
+                    print("Waiting for server side packet data")
+                    wait_files([drop_file, dup_file])
+                    try:
+                        with open(drop_file, "r") as f:
+                            dropped_packets = int(f.read())
+                            print(f"Dropped packets: {dropped_packets}")
+                    except (ValueError, IOError) as e:
+                        print(f"Exception while accessing {drop_file}: {e}")
+                    try:
+                        with open(f"/tmp/srperf_quic_driver/duplicated_packets.txt", "r") as f:
+                            duplicated_packets = int(f.read())
+                            print(f"Duplicated packets: {duplicated_packets}")
+                    except (ValueError, IOError) as e:
+                        print(f"Exception while accessing {dup_file}: {e}")
 
+            # We wait for a bit in order to let the counters be stable
+            sleep(1)
             # We retrieve statistics from Tx and Rx ports.
             txStats = client.get_xstats(self.txPort)
             rxStats = client.get_xstats(self.rxPort)
@@ -233,14 +245,15 @@ class QuicDriver:
                 client.disconnect()
             except Exception as e:
                 print("TRex disconnect warning: {}".format(e))
-            try:
-                os.remove(drop_file)
-            except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
-            try:
-                os.remove(dup_file)
-            except IOError as e:
-                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+            if not os.environ.get("DISABLE_SYNC") and not os.environ.get("MANUAL_SYNC"):
+                try:
+                    os.remove(drop_file)
+                except IOError as e:
+                    print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                try:
+                    os.remove(dup_file)
+                except IOError as e:
+                    print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
         return tOutput
 
