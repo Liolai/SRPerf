@@ -92,6 +92,8 @@ class NoDropRateSolver:
         self.delRatioLowerBound = output.getAverageDR()
 
         if self.delRatioLowerBound < self.dlThreshold:
+            run = output.runs[-1]
+            print(f"Tx: {run.getTxTotalPackets()}, Rx: {run.getRxTotalPackets()}, Duration:{self.experimentFactory.duration}")
             self.printAndDie(f"Invalid lower bound for the current searching window: DR is below the threshold.({self.delRatioLowerBound} < {self.dlThreshold})", 1)
 
         # Let's find out the PDR value
