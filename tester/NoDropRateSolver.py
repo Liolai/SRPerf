@@ -92,7 +92,7 @@ class NoDropRateSolver:
         self.delRatioLowerBound = output.getAverageDR()
 
         if self.delRatioLowerBound < self.dlThreshold:
-            self.printAndDie("Invalid lower bound for the current searching window: DR is below the threshold.", 1)
+            self.printAndDie(f"Invalid lower bound for the current searching window: DR is below the threshold.({self.delRatioLowerBound} < {self.dlThreshold})", 1)
 
         # Let's find out the PDR value
         while not stop:
